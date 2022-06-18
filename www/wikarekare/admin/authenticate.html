@@ -1,0 +1,102 @@
+<html>
+<head><title>Wikk Authenticated</title>
+<script src="/js/jquery-3.0.0.min.js"></script>
+<script src="/js/wikk_ajax-min.js"></script>
+  <script>
+    var user = "";
+    var is_authenticated = false;
+    var challenge = '';
+
+    //////////
+    function set_lock_icon() {
+      var login_span =  document.getElementById('login_span');
+      if(is_authenticated) {
+        url = '<img src="/images/unlocked.gif"></a>';
+      } else {
+        url = '<img src="/images/locked.gif"></a>';
+      }
+      login_span.innerHTML = url
+    }
+
+    function authenticated_callback(data) {   //Called when we get a response.
+      if(data != null && data.result != null) {
+        user = data.result.user;
+        is_authenticated = data.result.authenticated;
+      }
+      set_lock_icon()
+    }
+
+    function authenticated_error(jqXHR, textStatus, errorMessage) {   //Called on failure
+      alert( "Error: " + errorMessage );
+    }
+
+    function authenticated_completion(data) {   //Called when everything completed, including callback.
+      //alert( user + (is_authenticated ? " is authenticated" : " is not authenticated") );
+    }
+
+    function authenticated(delay) {
+      //alert(site_input.name + " " + site_input.value);
+      var args = {
+        "method": "Authenticate.authenticated",
+        "kwparams": { },
+        "version": 1.1
+      }
+      url = "/ruby/rpc.rbx"
+      wikk_ajax.delayed_ajax_post_call(url, args, authenticated_callback, authenticated_error, authenticated_completion, 'json', true, delay)
+    }
+    //////////
+    function fetch_challenge_callback(data) {   //Called when we get a response.
+      if(data != null && data.result != null) {
+        challenge = data.result.challenge;
+      }
+    }
+
+    function fetch_challenge_error(jqXHR, textStatus, errorMessage) {   //Called on failure
+      alert( "Error: " + errorMessage );
+    }
+
+    function fetch_challenge_completion(data) {   //Called when everything completed, including callback.
+      alert( user + (is_authenticated ? " is authenticated" : " is not authenticated") );
+    }
+
+    function fetch_challenge() {
+    }
+
+    //////////
+    function authenticate(the_form) {
+      alert(the_form.username + " " + the_form.password);
+      var args = {
+        "method": "Authenticate.authenticate",
+        "kwparams": {
+           "user": the_form.username,
+           "key": ""
+        },
+        "version": 1.1
+      }
+      url = "/ruby/rpc.rbx"
+      wikk_ajax.delayed_ajax_post_call(url, args, authenticated_callback, authenticated_error, authenticated_completion, 'json', true, delay)
+    }
+
+
+    function init() {
+      set_lock_icon();
+      authenticated(0);
+    }
+  </script>
+</head>
+  <body onload="init()">
+    <form NAME="login">
+      <table>
+        <tr><th>User name <span id="login_span"></span></th><td><input TYPE="text" ID="username" SIZE="32" MAXLENGTH="32"></td></tr>
+        <tr><th>Password</th><td><input TYPE="password" ID="password" SIZE="32" MAXLENGTH="32"></td></tr>
+        <tr><td>&nbsp;</td><td>
+          <input ONCLICK="authenticate(this); return false;" TYPE="submit" NAME="login" VALUE="Login">
+          <input TYPE="button" NAME="Cancel" VALUE="   Cancel   "
+          ONCLICK="document.login.Username.value='';document.login.Password.value=';return false;'">
+        </td></tr>
+      </table>
+    </form>
+    <script LANGUAGE="javascript" TYPE="text/javascript">
+          document.login.username.focus();
+    </script></body>
+</html>
