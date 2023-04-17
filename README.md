@@ -18,6 +18,7 @@ Login cgi to be used in conjunction with other Wikarekare cgis and the wikk_web_
 ## REQUIREMENTS:
 
 ###Gem required
+* require 'securerandom'
 * require 'wikk_aes_256'
 * require 'wikk_password'
 * require 'wikk_web_auth'
