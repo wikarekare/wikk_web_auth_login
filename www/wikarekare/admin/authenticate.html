@@ -1,103 +1,85 @@
 <html>
-<head><title>Wikk Authenticated</title>
-  <script src="/js/jquery-3.0.0.min.js"></script>
-  <script src="/js/wikk_ajax-min.js"></script>
-  <script src="/js/wikk_web_auth-min.js"></script>
-  <script>
-    var user = "";
-    var is_authenticated = false;
-    var challenge = '';
+  <head>
+    <title>Wikk Authenticate</title>
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+    <script src="/js/jquery-3.0.0.min.js"></script>
+    <script src="/js/wikk_ajax-min.js"></script>
+    <script src="/js/wikk_rpc_web_auth.js"></script>
+    <script src="/js/sha256.js"></script>
+    <script src="/js/wikk_params.js"></script>
 
-    //////////
-    function set_lock_icon() {
-      var login_span =  document.getElementById('login_span');
-      if(is_authenticated) {
-        url = '<img src="/images/unlocked.gif"></a>';
-      } else {
-        url = '<img src="/images/locked.gif"></a>';
-      }
-      login_span.innerHTML = url
+    <script language="JavaScript">
+    var return_url = null;
+
+    // We Might want to perform an action, if we are authenticated or when our session times out.
+    // This is going to get called a lot though, not just the first login/logout.
+    // The other approach is to check if we are authenticated, when refreshing other elements
+    // This can be done with call to wikk_rpc_web_auth.authenticated()
+    function auth_callback(data) {
     }
 
-    function authenticated_callback(data) {   //Called when we get a response.
-      if(data != null && data.result != null) {
-        user = data.result.user;
-        is_authenticated = data.result.authenticated;
-      }
-      set_lock_icon()
-    }
-
-    function authenticated_error(jqXHR, textStatus, errorMessage) {   //Called on failure
-      alert( "Error: " + errorMessage );
-    }
-
-    function authenticated_completion(data) {   //Called when everything completed, including callback.
-      //alert( user + (is_authenticated ? " is authenticated" : " is not authenticated") );
-    }
-
-    function authenticated(delay) {
-      //alert(site_input.name + " " + site_input.value);
-      var args = {
-        "method": "Authenticate.authenticated",
-        "kwparams": { },
-        "version": 1.1
-      }
-      url = "/ruby/rpc.rbx"
-      wikk_ajax.delayed_ajax_post_call(url, args, authenticated_callback, authenticated_error, authenticated_completion, 'json', true, delay)
-    }
-    //////////
-    function fetch_challenge_callback(data) {   //Called when we get a response.
-      if(data != null && data.result != null) {
-        challenge = data.result.challenge;
+    // We might want to perform some action on a successful login.
+    function login_callback(authenticated) {
+      if(return_url != null && return_url != window.location.url && authenticated != null && authenticated){
+        // Login succeeded, and we aren't being asked to return to the login page
+        // location.replace doesn't leave a history entry, so back wont go back to this page.
+        location.replace(return_url);
       }
     }
 
-    function fetch_challenge_error(jqXHR, textStatus, errorMessage) {   //Called on failure
-      alert( "Error: " + errorMessage );
-    }
-
-    function fetch_challenge_completion(data) {   //Called when everything completed, including callback.
-      alert( user + (is_authenticated ? " is authenticated" : " is not authenticated") );
-    }
-
-    function fetch_challenge() {
-    }
-
-    //////////
-    function authenticate(the_form) {
-      alert(the_form.username + " " + the_form.password);
-      var args = {
-        "method": "Authenticate.authenticate",
-        "kwparams": {
-           "user": the_form.username,
-           "key": ""
-        },
-        "version": 1.1
+    // We might want to perform some action on a logout.
+    function logout_callback(authenticated=false) {
+      if(return_url != null && return_url != window.location.url){
+        // ensure we aren't being asked to return to the login page
+        // location.replace doesn't leave a history entry, so back wont go back to this page.
+        location.replace(return_url);
       }
-      url = "/ruby/rpc.rbx"
-      wikk_ajax.delayed_ajax_post_call(url, args, authenticated_callback, authenticated_error, authenticated_completion, 'json', true, delay)
     }
 
+    // Called by the form's login button
+    function authenticate(form) {
+      wikk_rpc_web_auth.login(form.Username.value, form.Password.value, login_callback);
+      form.login.Password.value = ''; // clear the password field.
+    }
 
     function init() {
-      set_lock_icon();
-      authenticated(0);
+      wikk_params.getURLParameters();
+      return_url = wikk_params.get_argv('ReturnURL');
+      if(wikk_params.get_argv['login']) {
+        wikk_rpc_web_auth.init('login_span', return_url, true, null);
+      } else if(wikk_params.get_argv('logout')){
+        wikk_rpc_web_auth.init('login_span', return_url, true, null);
+      } else { // No args, so nowhere to return to.
+        return_url = null;
+        wikk_rpc_web_auth.init('login_span', null,  true, null);
+      }
     }
-  </script>
-</head>
+    </script>
+  </head>
   <body onload="init()">
     <form NAME="login">
       <table>
-        <tr><th>User name <span id="login_span"></span></th><td><input TYPE="text" ID="username" SIZE="32" MAXLENGTH="32"></td></tr>
-        <tr><th>Password</th><td><input TYPE="password" ID="password" SIZE="32" MAXLENGTH="32"></td></tr>
-        <tr><td>&nbsp;</td><td>
-          <input ONCLICK="authenticate(this); return false;" TYPE="submit" NAME="login" VALUE="Login">
-          <input TYPE="button" NAME="Cancel" VALUE="   Cancel   "
-          ONCLICK="document.login.Username.value='';document.login.Password.value=';return false;'">
-        </td></tr>
+        <tr>
+          <th>User name</th>
+          <td><input TYPE="text" ID="username" SIZE="32" MAXLENGTH="32"></td>
+        </tr>
+        <tr>
+          <th>Password</th>
+          <td><input TYPE="password" ID="password" SIZE="32" MAXLENGTH="32"></td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>
+              <input ONCLICK="authenticate(this); return false;" TYPE="submit" NAME="login" VALUE="Login">
+              <input TYPE="button" NAME="Cancel" VALUE="   Cancel   "
+                      ONCLICK="this.Username.value='';this.Password.value=';return false;'">
+              <span id="login_span"></span>
+            </td>
+        </tr>
       </table>
     </form>
     <script LANGUAGE="javascript" TYPE="text/javascript">
           document.login.username.focus();
-    </script></body>
+    </script>
+  </body>
 </html>
