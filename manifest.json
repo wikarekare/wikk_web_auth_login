@@ -1,0 +1,14 @@
+[
+  { "src": "rlib/",
+    "dst": "rlib",
+    "mode": "0644",
+    "user": "root",
+    "group": "root"
+  },
+  { "src": "www/wikarekare/",
+    "dst": "www/wikarekare",
+    "mode": "0644",
+    "user": "root",
+    "group": "root"
+  }
+]
