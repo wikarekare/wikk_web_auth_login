@@ -2,7 +2,7 @@ var wikk_rpc_web_auth = (function () {
   //authentication
   var VERSION = "1.0.0";
   var auth_cgi = "/rpc"; // Should also work with the older ruby/rpc.rbx prefix
-  var login_url = "/admin2/authenticate.html"
+  var login_url = "/admin/authenticate.html"
   var use_lock_only = false; //Use only the lock/unlock images, and no text in the div.
   var return_url = null; //Where we jump to if we are authenticated.
   var authentication_state = false; //We have authenticated this session.
@@ -104,7 +104,7 @@ var wikk_rpc_web_auth = (function () {
       "id": Date.getTime(),
       "jsonrpc": 2.0
     }
-    url = "/rpc"
+    url = RPC
     wikk_ajax.ajax_post_call(url, args, authenticated_callback, authenticated_error, authenticated_completion, 'json', true )
   }
 
@@ -140,7 +140,7 @@ var wikk_rpc_web_auth = (function () {
       "id": Date.getTime(),
       "jsonrpc": 2.0
     }
-    url = "/rpc"
+    url = RPC
     wikk_ajax.ajax_post_call(url, args, response_callback, response_error, response_completion, 'json', true );
   }
 
@@ -170,7 +170,7 @@ var wikk_rpc_web_auth = (function () {
       "id": Date.getTime(),
       "jsonrpc": 2.0
     }
-    url = "/rpc"
+    url = RPC
     wikk_ajax.ajax_post_call(url, args, logout_callback, logout_error, logout_completion, 'json', true );
   }
 
