@@ -72,7 +72,7 @@ var wikk_rpc_web_auth = (function () {
     var args = {
       "method": "Authenticate.authenticated",
       "params": { },
-      "id": Date.getTime(),
+      "id": new Date().getTime(),
       "jsonrpc": 2.0
     }
     url = auth_cgi
@@ -101,10 +101,10 @@ var wikk_rpc_web_auth = (function () {
       "params": {
          "username": user
       },
-      "id": Date.getTime(),
+      "id": new Date().getTime(),
       "jsonrpc": 2.0
     }
-    url = RPC
+    url = RPC_URL
     wikk_ajax.ajax_post_call(url, args, authenticated_callback, authenticated_error, authenticated_completion, 'json', true )
   }
 
@@ -137,10 +137,10 @@ var wikk_rpc_web_auth = (function () {
          "username": user,
          "response": response
       },
-      "id": Date.getTime(),
+      "id": new Date().getTime(),
       "jsonrpc": 2.0
     }
-    url = RPC
+    url = RPC_URL
     wikk_ajax.ajax_post_call(url, args, response_callback, response_error, response_completion, 'json', true );
   }
 
@@ -167,10 +167,10 @@ var wikk_rpc_web_auth = (function () {
       "method": "Authenticate.logout",
       "params": {
       },
-      "id": Date.getTime(),
+      "id": new Date().getTime(),
       "jsonrpc": 2.0
     }
-    url = RPC
+    url = RPC_URL
     wikk_ajax.ajax_post_call(url, args, logout_callback, logout_error, logout_completion, 'json', true );
   }
 

@@ -11,7 +11,7 @@ Login cgi to be used in conjunction with other Wikarekare cgis and the wikk_web_
 
 ## SYNOPSIS:
 
-* login.rbx?ReturnURL=http://admin2.wikarekare.org/ provides login form, and redirect on success
+* login.rbx?ReturnURL=https://admin2.wikarekare.org/ provides login form, and redirect on success
 * login.rbx?action=logout Terminates the current session
 * login.rbx?action=test Return json { "returnCode": "true" } or { "returnCode": "false" }
 

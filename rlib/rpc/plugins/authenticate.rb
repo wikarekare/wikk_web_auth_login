@@ -10,8 +10,8 @@ require 'wikk_configuration'
 class Authenticate < RPC
   # Init class
   # @param authenticated [Boolean] passed in, if we know our authentication status.
-  def initialize(cgi, authenticated = false)
-    super(cgi, authenticated)
+  def initialize(cgi:, authenticated: false)
+    super(cgi: cgi, authenticated: authenticated)
     @login_conf = WIKK::Configuration.new(WIKK_PASSWORD_CONF) # Where is our password file
     @pstore_conf = JSON.parse(File.read(PSTORE_CONF)) # Where is our pstore
   end
