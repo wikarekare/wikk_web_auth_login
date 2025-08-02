@@ -18,7 +18,7 @@ class Authenticate < RPC
 
   # We are authenticated, if there is a current session in the pstore, for this session cookie
   # Note that we are ignoring the authenticated status passed to us in initialize, and validating again.
-  rmethod :authenticated do |select_on: nil, set: nil, result: nil, **_args|  # rubocop:disable Lint/UnusedBlockArgument"
+  rmethod :authenticated do |select_on: nil, set: nil, result: nil, **_args|  # rubocop:disable Lint/UnusedBlockArgument
     return { 'authenticated' => WIKK::Web_Auth.authenticated?(@cgi, pstore_config: @pstore_conf) }
   end
 
@@ -26,7 +26,7 @@ class Authenticate < RPC
   # We might already be authenticated, but this call will delete that session (based on the cookie in @cgi)
   # challenge is a random string, used in the next step of the authentication
   # Nb. The @cgi.@output_cookies Array and the @cgi.output_hidden Hash will have a cookie set by this step
-  rmethod :challenge do |select_on: nil, set: nil, result: nil, **_args|  # rubocop:disable Lint/UnusedBlockArgument"
+  rmethod :challenge do |select_on: nil, set: nil, result: nil, **_args|  # rubocop:disable Lint/UnusedBlockArgument
     username = select_on['username']
     return_url = select_on['return_url']
     raise 'require user name' if username.nil? || username.empty?
@@ -40,7 +40,7 @@ class Authenticate < RPC
   # Step 2 of a login is to respond to the challenge packet
   # The response uses the challenge to create a unique hash with the password
   # Nb. The @cgi.@output_cookies Array and the @cgi.output_hidden Hash will have a cookie reset by this step
-  rmethod :response do |select_on: nil, set: nil, result: nil, **_args|  # rubocop:disable Lint/UnusedBlockArgument"
+  rmethod :response do |select_on: nil, set: nil, result: nil, **_args|  # rubocop:disable Lint/UnusedBlockArgument
     # will either generate a login page
     # Or no page, if we are already authenticated
     username = select_on['username']
@@ -52,7 +52,7 @@ class Authenticate < RPC
     return { 'authenticated' => auth.valid_response? }
   end
 
-  rmethod :logout do |select_on: nil, set: nil, result: nil, **_args|  # rubocop:disable Lint/UnusedBlockArgument"
+  rmethod :logout do |select_on: nil, set: nil, result: nil, **_args|  # rubocop:disable Lint/UnusedBlockArgument
     WIKK::Web_Auth.logout(@cgi, pstore_config: @pstore_conf)
 
     return { 'authenticated' => false }
